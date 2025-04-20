@@ -1,10 +1,7 @@
-require('dotenv').config();
-
 {
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"
@@ -20,8 +17,4 @@ require('dotenv').config();
   "author": "",
   "license": "ISC",
   "description": ""
-}
-
-"scripts": {
-  "start": "node server.js"
 }
