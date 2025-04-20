@@ -1,0 +1,44 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE or text editor files
+.vscode/
+.idea/
+
+# Build directories (for example, if you're using a build tool)
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.swp
+
+# Package lock file (if you want to ignore it, but it is usually recommended to track)
+# package-lock.json
+
+# Coverage reports (if you're using testing frameworks)
+coverage/
+
+# Operating System-specific files
+# Windows Installer logs
+*.cab
+*.msi
+
+# Mac OS
+*.DS_Store
+
+# Linux
+*.bak
+*.swp

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Management</title>
+  <link rel="manifest" href="/manifest.json" />
+
+  <style>
+    /* === Your Existing CSS === */
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, black 50%, rgb(0, 255, 255));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      width: 50%;
+    }
+
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-group input {
+      flex: 1;
+      margin: 5px;
+    }
+
+    input,
+    textarea,
+    button {
+      margin-top: 5px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #contactList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      /* Grid layout with responsive columns */
+      gap: 20px;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .contact-card {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover {
+      transform: scale(1.05);
+    }
+
+    .contact-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 20px;
+    }
+
+    .contact-info {
+      flex-grow: 1;
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .contact-actions button {
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .edit {
+      background-color: rgb(12, 67, 194);
+      color: white;
+      border: none;
+    }
+
+    .delete {
+      background-color: red;
+      color: white;
+      border: none;
+    }
+
+    .edit {
+      background-color: rgb(12, 67, 194);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      background-color: black;
+      color: white;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+      width: 300px;
+    }
+
+    #logoutButton {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background-color: red;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .password-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .password-toggle input[type="checkbox"] {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sign In Modal -->
+  <div id="signinModal" class="modal">
+    <div class="modal-content">
+      <h2>Sign In</h2>
+      <input type="email" id="signinEmail" placeholder="Email" required />
+      <div class="password-toggle">
+        <input type="password" id="signinPassword" placeholder="Password" required />
+        <label><input type="checkbox" onclick="toggleSigninPassword()"> Show</label>
+      </div>
+      <button onclick="signin()">Sign In</button>
+      <p style="margin-top:10px;">Don't have an account? <a href="#" onclick="toggleModals('signup')">Sign Up</a></p>
+    </div>
+  </div>
+
+  <!-- Sign Up Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <h2>Sign Up</h2>
+      <input type="text" id="signupName" placeholder="Name" required />
+      <input type="email" id="signupEmail" placeholder="Email" required />
+      <div class="password-toggle">
+        <input type="password" id="signupPassword" placeholder="Password" required />
+        <label><input type="checkbox" onclick="toggleSignupPassword()"> Show</label>
+      </div>
+      <button onclick="signup()">Sign Up</button>
+      <p style="margin-top:10px;">Already have an account? <a href="#" onclick="toggleModals('signin')">Sign In</a></p>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container" id="mainContainer" style="display:none;">
+    <button id="logoutButton" onclick="logout()">Log Out</button>
+    <h1>Contact Management</h1>
+    <form onsubmit="addContact(event)">
+      <div class="form-group">
+        <input type="text" id="contactName" placeholder="Name" required />
+        <input type="text" id="contactPhone" placeholder="Phone Number" required />
+      </div>
+      <div class="form-group">
+        <input type="email" id="contactEmail" placeholder="Email (Optional)" />
+        <input type="date" id="contactBirthday" placeholder="Birthday (Optional)" />
+      </div>
+      <div class="form-group">
+        <textarea id="contactAddress" placeholder="Address (Optional)"></textarea>
+      </div>
+      <input type="file" id="contactPhoto" placeholder="Upload Photo (Optional)" />
+      <button type="submit">Add Contact</button>
+    </form>
+    <input type="text" id="searchInput" placeholder="Search contacts..." oninput="filterContacts()" />
+    <ul id="contactList"></ul>
+  </div>
+
+  <script>
+    // ---------- IndexedDB Setup ----------
+    const DB_NAME = 'contactsDB';
+    const DB_VERSION = 1;
+    const DB_STORE_NAME = 'contacts';
+    let db;
+  
+    function openDb() {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+  
+      request.onerror = event => console.error("Database error:", event.target.errorCode);
+      request.onsuccess = event => {
+        db = event.target.result;
+        console.log("IndexedDB opened successfully");
+      };
+      request.onupgradeneeded = event => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(DB_STORE_NAME)) {
+          db.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        }
+      };
+    }
+  
+    function saveContactToIndexedDB(contact) {
+      const transaction = db.transaction([DB_STORE_NAME], "readwrite");
+      const store = transaction.objectStore(DB_STORE_NAME);
+      store.add(contact).onsuccess = () => console.log("Contact saved to IndexedDB");
+    }
+  
+    function getContactsFromIndexedDB(callback) {
+      const transaction = db.transaction([DB_STORE_NAME], "readonly");
+      const store = transaction.objectStore(DB_STORE_NAME);
+      store.getAll().onsuccess = event => callback(event.target.result);
+    }
+  
+    // ---------- App Logic ----------
+    let currentUser = null;
+    let contacts = [];
+    let editingIndex = null;
+  
+    function addContact(event) {
+      event.preventDefault();
+  
+      const name = document.getElementById("contactName").value;
+      const phone = document.getElementById("contactPhone").value;
+      const email = document.getElementById("contactEmail").value;
+      const birthday = document.getElementById("contactBirthday").value;
+      const address = document.getElementById("contactAddress").value;
+      const userEmail = localStorage.getItem("user");
+  
+      const newContact = { name, phone, email, birthday, address, userEmail };
+  
+      if (navigator.onLine) {
+        fetch("http://localhost:3000/addContact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newContact),
+        })
+          .then(res => res.json())
+          .then(result => {
+            alert(result.message);
+            if (result.success) getContacts();
+          })
+          .catch(err => {
+            console.error("Add error:", err);
+            alert("Failed to add contact.");
+          });
+      } else {
+        saveContactToIndexedDB(newContact);
+        alert("Offline: Contact saved locally.");
+      }
+    }
+  
+    function getContacts() {
+      const userEmail = localStorage.getItem("user");
+      if (navigator.onLine) {
+        fetch(`http://localhost:3000/contacts/${userEmail}`)
+          .then(res => res.json())
+          .then(data => {
+            contacts = data.contacts || [];
+            displayContacts();
+          })
+          .catch(err => console.error("Fetch contacts error:", err));
+      } else {
+        getContactsFromIndexedDB(localContacts => {
+          contacts = localContacts.filter(c => c.userEmail === userEmail);
+          displayContacts();
+        });
+      }
+    }
+  
+    function displayContacts() {
+      const list = document.getElementById("contactList");
+      list.innerHTML = "";
+  
+      contacts.forEach((contact, index) => {
+        const li = document.createElement("li");
+        li.classList.add("contact-card");
+        li.innerHTML = `
+          <img src="${contact.photo || 'default-avatar.jpg'}" class="contact-photo" alt="Photo" />
+          <div class="contact-info">
+            <strong>${contact.name}</strong><br>
+            ${contact.phone}<br>
+            ${contact.email || ''}<br>
+            ${contact.birthday || ''}<br>
+            ${contact.address || ''}<br>
+          </div>
+          <div class="contact-actions">
+            <button class="edit" onclick="editContact(${index})">Edit</button>
+            <button class="delete" onclick="deleteContact(${index})">Delete</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+  
+    function editContact(index) {
+      const contact = contacts[index];
+      document.getElementById("contactName").value = contact.name;
+      document.getElementById("contactPhone").value = contact.phone;
+      document.getElementById("contactEmail").value = contact.email;
+      document.getElementById("contactBirthday").value = contact.birthday;
+      document.getElementById("contactAddress").value = contact.address;
+      editingIndex = index;
+    }
+  
+    function deleteContact(index) {
+      const contactId = contacts[index]._id;
+      const userEmail = localStorage.getItem("user");
+  
+      fetch(`http://localhost:3000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("Contact deleted!");
+            getContacts();
+          }
+        });
+    }
+  
+    // ---------- Auth ----------
+    function toggleModals(show) {
+      document.getElementById("signupModal").style.display = show === "signup" ? "flex" : "none";
+      document.getElementById("signinModal").style.display = show === "signin" ? "flex" : "none";
+    }
+  
+    function signup() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const name = document.getElementById("signupName").value.trim();
+      const password = document.getElementById("signupPassword").value.trim();
+  
+      if (!email || !name || !password) {
+        alert("All fields are required.");
+        return;
+      }
+  
+      fetch("http://localhost:3000/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, password }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) {
+            localStorage.setItem("user", email);
+            currentUser = email;
+            document.getElementById("mainContainer").style.display = "block";
+            toggleModals();
+            contacts = [];
+            getContacts();
+          }
+        });
+    }
+  
+    function signin() {
+      const email = document.getElementById("signinEmail").value.trim();
+      const password = document.getElementById("signinPassword").value.trim();
+  
+      fetch("http://localhost:3000/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) {
+            localStorage.setItem("user", email);
+            currentUser = email;
+            document.getElementById("mainContainer").style.display = "block";
+            toggleModals();
+            contacts = [];
+            getContacts();
+          }
+        });
+    }
+  
+    function logout() {
+      localStorage.removeItem("user");
+      currentUser = null;
+      contacts = [];
+      document.getElementById("mainContainer").style.display = "none";
+      toggleModals("signin");
+    }
+  
+    // ---------- Service Worker ----------
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => console.log("SW registered:", reg.scope))
+        .catch(err => console.error("SW failed:", err));
+    }
+  
+    // ---------- App Init ----------
+    window.onload = function () {
+      openDb();
+      const savedUser = localStorage.getItem("user");
+      if (savedUser) {
+        currentUser = savedUser;
+        document.getElementById("mainContainer").style.display = "block";
+        getContacts();
+      } else {
+        toggleModals("signin");
+      }
+    };
+  </script>
+  
+
+</body>
+
+</html>
