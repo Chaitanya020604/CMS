@@ -13,10 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection
 mongoose
-  .connect('mongodb://127.0.0.1:27017/cmsDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect('mongodb://127.0.0.1:27017/cmsDB')  // Removed deprecated options
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((error) => console.log('❌ Error connecting to MongoDB:', error));
 
@@ -43,8 +40,6 @@ const contactSchema = new mongoose.Schema({
 // Create the Contact model based on the schema
 const Contact = mongoose.model('Contact', contactSchema);
 
-module.exports = mongoose.model("Contact", contactSchema);
-
 // ✅ Add this route to fix "Cannot GET /"
 // In your backend code (server.js or app.js)
 app.get("/contacts", async (req, res) => {
@@ -56,7 +51,6 @@ app.get("/contacts", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch contacts" });
   }
 });
-
 
 // Signup Route (for users)
 app.post("/signup", async (req, res) => {
@@ -122,9 +116,7 @@ app.post("/addContact", async (req, res) => {
   }
 });
 
-
-
-// Get all contacts (GET)
+// Get all contacts (GET) by user email
 app.get("/contacts/:email", async (req, res) => {
   try {
     const email = req.params.email;
@@ -135,7 +127,6 @@ app.get("/contacts/:email", async (req, res) => {
     res.status(500).json({ success: false, message: "Error fetching contacts" });
   }
 });
-
 
 // Delete contact by ID (DELETE)
 app.delete("/deleteContact/:id/:email", async (req, res) => {
@@ -151,8 +142,6 @@ app.delete("/deleteContact/:id/:email", async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to delete contact" });
   }
 });
-
-
 
 // Update contact by ID (PUT)
 app.put("/updateContact/:id", async (req, res) => {

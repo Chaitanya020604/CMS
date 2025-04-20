@@ -1,11 +1,4 @@
 {
-  "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "exceljs": "^4.4.0",
-    "express": "^5.1.0",
-    "mongoose": "^8.13.2"
-  },
   "name": "cms",
   "version": "1.0.0",
   "main": "server.js",
@@ -13,8 +6,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  },
   "license": "ISC",
   "description": ""
 }
