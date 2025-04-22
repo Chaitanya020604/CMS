@@ -252,7 +252,20 @@
       store.getAll().onsuccess = event => callback(event.target.result);
     }
   
-    // ---------- App Logic ----------
+    // ---------- Password Visibility Toggle Functions ----------
+    function toggleSigninPassword() {
+      const passwordField = document.getElementById("signinPassword");
+      const isPasswordType = passwordField.type === "password";
+      passwordField.type = isPasswordType ? "text" : "password";
+    }
+  
+    function toggleSignupPassword() {
+      const passwordField = document.getElementById("signupPassword");
+      const isPasswordType = passwordField.type === "password";
+      passwordField.type = isPasswordType ? "text" : "password";
+    }
+  
+    // ---------- App Logic ----------  
     let currentUser = null;
     let contacts = [];
     let editingIndex = null;
@@ -270,7 +283,7 @@
       const newContact = { name, phone, email, birthday, address, userEmail };
   
       if (navigator.onLine) {
-        fetch("http://localhost:3000/addContact", {
+        fetch("http://localhost:10000/addContact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newContact),
@@ -293,7 +306,7 @@
     function getContacts() {
       const userEmail = localStorage.getItem("user");
       if (navigator.onLine) {
-        fetch(`http://localhost:3000/contacts/${userEmail}`)
+        fetch(`http://localhost:10000/contacts/${userEmail}`)
           .then(res => res.json())
           .then(data => {
             contacts = data.contacts || [];
@@ -347,7 +360,7 @@
       const contactId = contacts[index]._id;
       const userEmail = localStorage.getItem("user");
   
-      fetch(`http://localhost:3000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
+      fetch(`http://localhost:10000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -373,7 +386,7 @@
         return;
       }
   
-      fetch("http://localhost:3000/signup", {
+      fetch("http://localhost:10000/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
@@ -396,7 +409,7 @@
       const email = document.getElementById("signinEmail").value.trim();
       const password = document.getElementById("signinPassword").value.trim();
   
-      fetch("http://localhost:3000/signin", {
+      fetch("http://localhost:10000/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -443,7 +456,6 @@
       }
     };
   </script>
-  
 
 </body>
 
