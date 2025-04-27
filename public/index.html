@@ -6,17 +6,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Management</title>
   <link rel="manifest" href="/manifest.json" />
-
   <style>
-    /* === Your Existing CSS === */
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, black 50%, rgb(0, 255, 255));
+      background-color: #2e2e2e;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      flex-direction: column;
+      min-height: 100vh;
       margin: 0;
+    }
+
+    .header {
+      height: 10mm;
+      background-color: black;
+      color: aqua;
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .info-section {
+  background-color: #44444400;
+  color: white;
+  padding: 20px;
+  text-align: left; /* <-- Important: left-align like Q&A */
+  font-size: 16px;
+  text-align: justify;
+}
+
+.info-section h2 {
+  margin-bottom: 10px; /* <-- Only small gap between H2 and paragraph */
+  font-size: 28px;
+}
+
+.info-section p {
+  max-width: 100%; /* <-- Full width inside section */
+  margin: 0; /* <-- Remove extra margin */
+  line-height: 1.6;
+}
+
+
+
+
+    .footer {
+      height: 10mm;
+      background-color: black;
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      color: white;
+      font-size: 14px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .social-icons a {
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
     }
 
     .container {
@@ -26,6 +80,7 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       position: relative;
       width: 50%;
+      margin: 20px auto;
     }
 
     .form-group {
@@ -49,19 +104,22 @@
 
     #contactList {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      /* Grid layout with responsive columns */
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
       gap: 20px;
       padding: 0;
       margin-top: 20px;
     }
 
     .contact-card {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
       background-color: #fff;
       border: 1px solid #ccc;
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
       display: flex;
+      flex-direction: row;
       align-items: center;
       box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
@@ -76,7 +134,7 @@
       height: 60px;
       border-radius: 50%;
       object-fit: cover;
-      margin-right: 20px;
+      margin-right: 15px;
     }
 
     .contact-info {
@@ -85,7 +143,9 @@
 
     .contact-actions {
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 10px;
     }
 
     .contact-actions button {
@@ -104,14 +164,6 @@
       background-color: red;
       color: white;
       border: none;
-    }
-
-    .edit {
-      background-color: rgb(12, 67, 194);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
     }
 
     button[type="submit"] {
@@ -139,6 +191,7 @@
       border-radius: 10px;
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
       width: 300px;
+      margin-top: 300px;
     }
 
     #logoutButton {
@@ -165,6 +218,16 @@
 </head>
 
 <body>
+
+<header class="header">CMS - Contact Management System</header>
+
+<section class="info-section">
+  <h2>Why Choose Our Contact Management System?</h2>
+  <p>
+    In today’s fast-paced world, staying organized is crucial. Our Contact Management System (CMS) is built to provide you with a simple, powerful, and reliable solution for managing all your contacts. Whether you're managing personal connections, business networks, or client lists, our CMS ensures you have easy access to your information anytime, anywhere. We offer secure user authentication, fast and efficient contact storage, and even offline support through advanced technologies like IndexedDB. This means you can add, edit, or view contacts even without an internet connection, and everything will sync automatically once you’re back online. With an intuitive interface, quick photo uploads, responsive design, and smooth performance across all devices, our CMS makes managing your relationships effortless. Security is a top priority — your personal data is protected through secure login systems, giving you peace of mind. Plus, our smart search feature helps you find any contact instantly. Choose our Contact Management System to experience seamless organization, ultimate flexibility, and modern design. It's more than just a tool; it's a smart way to stay connected and build stronger relationships. Trust us to help you manage your contacts better than ever before!
+  </p>
+</section>
+
   <!-- Sign In Modal -->
   <div id="signinModal" class="modal">
     <div class="modal-content">
@@ -217,16 +280,30 @@
     <ul id="contactList"></ul>
   </div>
 
+  
+<footer class="footer">
+  <div class="social-icons">
+    <a href="https://www.linkedin.com" target="_blank" title="LinkedIn">🔗</a>
+    <a href="https://www.contact.com" target="_blank" title="Contact">📞</a>
+    <a href="mailto:example@email.com" title="Email">✉️</a>
+    <a href="https://www.instagram.com" target="_blank" title="Instagram">📸</a>
+    <a href="https://www.facebook.com" target="_blank" title="Facebook">📘</a>
+  </div>
+  <div class="feedback">
+    Feedback
+  </div>
+</footer>
+
   <script>
     // ---------- IndexedDB Setup ----------
     const DB_NAME = 'contactsDB';
     const DB_VERSION = 1;
     const DB_STORE_NAME = 'contacts';
     let db;
-  
+
     function openDb() {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
-  
+
       request.onerror = event => console.error("Database error:", event.target.errorCode);
       request.onsuccess = event => {
         db = event.target.result;
@@ -239,38 +316,51 @@
         }
       };
     }
-  
+
     function saveContactToIndexedDB(contact) {
       const transaction = db.transaction([DB_STORE_NAME], "readwrite");
       const store = transaction.objectStore(DB_STORE_NAME);
       store.add(contact).onsuccess = () => console.log("Contact saved to IndexedDB");
     }
-  
+
     function getContactsFromIndexedDB(callback) {
       const transaction = db.transaction([DB_STORE_NAME], "readonly");
       const store = transaction.objectStore(DB_STORE_NAME);
       store.getAll().onsuccess = event => callback(event.target.result);
     }
-  
-    // ---------- App Logic ----------
+
+    // ---------- Password Visibility Toggle Functions ----------
+    function toggleSigninPassword() {
+      const passwordField = document.getElementById("signinPassword");
+      const isPasswordType = passwordField.type === "password";
+      passwordField.type = isPasswordType ? "text" : "password";
+    }
+
+    function toggleSignupPassword() {
+      const passwordField = document.getElementById("signupPassword");
+      const isPasswordType = passwordField.type === "password";
+      passwordField.type = isPasswordType ? "text" : "password";
+    }
+
+    // ---------- App Logic ----------  
     let currentUser = null;
     let contacts = [];
     let editingIndex = null;
-  
+
     function addContact(event) {
       event.preventDefault();
-  
+
       const name = document.getElementById("contactName").value;
       const phone = document.getElementById("contactPhone").value;
       const email = document.getElementById("contactEmail").value;
       const birthday = document.getElementById("contactBirthday").value;
       const address = document.getElementById("contactAddress").value;
       const userEmail = localStorage.getItem("user");
-  
+
       const newContact = { name, phone, email, birthday, address, userEmail };
-  
+
       if (navigator.onLine) {
-        fetch("http://localhost:3000/addContact", {
+        fetch("http://localhost:10000/addContact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newContact),
@@ -289,11 +379,11 @@
         alert("Offline: Contact saved locally.");
       }
     }
-  
+
     function getContacts() {
       const userEmail = localStorage.getItem("user");
       if (navigator.onLine) {
-        fetch(`http://localhost:3000/contacts/${userEmail}`)
+        fetch(`http://localhost:10000/contacts/${userEmail}`)
           .then(res => res.json())
           .then(data => {
             contacts = data.contacts || [];
@@ -307,11 +397,11 @@
         });
       }
     }
-  
+
     function displayContacts() {
       const list = document.getElementById("contactList");
       list.innerHTML = "";
-  
+
       contacts.forEach((contact, index) => {
         const li = document.createElement("li");
         li.classList.add("contact-card");
@@ -332,7 +422,7 @@
         list.appendChild(li);
       });
     }
-  
+
     function editContact(index) {
       const contact = contacts[index];
       document.getElementById("contactName").value = contact.name;
@@ -342,12 +432,12 @@
       document.getElementById("contactAddress").value = contact.address;
       editingIndex = index;
     }
-  
+
     function deleteContact(index) {
       const contactId = contacts[index]._id;
       const userEmail = localStorage.getItem("user");
-  
-      fetch(`http://localhost:3000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
+
+      fetch(`http://localhost:10000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -356,24 +446,24 @@
           }
         });
     }
-  
+
     // ---------- Auth ----------
     function toggleModals(show) {
       document.getElementById("signupModal").style.display = show === "signup" ? "flex" : "none";
       document.getElementById("signinModal").style.display = show === "signin" ? "flex" : "none";
     }
-  
+
     function signup() {
       const email = document.getElementById("signupEmail").value.trim();
       const name = document.getElementById("signupName").value.trim();
       const password = document.getElementById("signupPassword").value.trim();
-  
+
       if (!email || !name || !password) {
         alert("All fields are required.");
         return;
       }
-  
-      fetch("http://localhost:3000/signup", {
+
+      fetch("http://localhost:10000/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
@@ -391,12 +481,12 @@
           }
         });
     }
-  
+
     function signin() {
       const email = document.getElementById("signinEmail").value.trim();
       const password = document.getElementById("signinPassword").value.trim();
-  
-      fetch("http://localhost:3000/signin", {
+
+      fetch("http://localhost:10000/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -414,7 +504,7 @@
           }
         });
     }
-  
+
     function logout() {
       localStorage.removeItem("user");
       currentUser = null;
@@ -422,14 +512,14 @@
       document.getElementById("mainContainer").style.display = "none";
       toggleModals("signin");
     }
-  
+
     // ---------- Service Worker ----------
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
         .then(reg => console.log("SW registered:", reg.scope))
         .catch(err => console.error("SW failed:", err));
     }
-  
+
     // ---------- App Init ----------
     window.onload = function () {
       openDb();
@@ -443,7 +533,6 @@
       }
     };
   </script>
-  
 
 </body>
 

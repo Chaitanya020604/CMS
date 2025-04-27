@@ -1,0 +1,10 @@
+{
+    "name": "Contact Management App",
+    "short_name": "Contacts",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "Manage contacts offline and online",
+    "icons": []
+  }
+  

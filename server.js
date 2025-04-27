@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mongoose = require("mongoose");
+require('dotenv').config();
 const app = express();
+const bcrypt = require('bcryptjs');
 
 // Enable CORS and parse JSON
 app.use(cors());
@@ -13,7 +15,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection
 mongoose
-  .connect('mongodb://127.0.0.1:27017/cmsDB')  // Removed deprecated options
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((error) => console.log('❌ Error connecting to MongoDB:', error));
 
@@ -34,67 +39,58 @@ const contactSchema = new mongoose.Schema({
   birthday: String,
   address: String,
   photo: String,
-  userEmail: String, // this will link the contact to the user
+  userEmail: String,
 });
 
-// Create the Contact model based on the schema
 const Contact = mongoose.model('Contact', contactSchema);
 
-// ✅ Add this route to fix "Cannot GET /"
-// In your backend code (server.js or app.js)
-app.get("/contacts", async (req, res) => {
-  try {
-    const contacts = await Contact.find();  // Fetch all contacts from MongoDB
-    res.json({ contacts }); // Send the contacts as a JSON response
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-    res.status(500).json({ message: "Failed to fetch contacts" });
-  }
-});
-
 // Signup Route (for users)
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res, next) => {
   const { email, name, password } = req.body;
 
   if (!email || !name || !password) {
-    return res.json({ success: false, message: "All fields are required" });
+    return res.status(400).json({ success: false, message: "All fields are required" });
   }
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({ success: false, message: "Email already exists" });
+      return res.status(409).json({ success: false, message: "Email already exists" });
     }
 
-    const newUser = new User({ email, name, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ email, name, password: hashedPassword });
     await newUser.save();
 
-    res.json({ success: true, message: "Signup successful" });
+    res.status(201).json({ success: true, message: "Signup successful" });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.json({ success: false, message: "Signup failed. Try again." });
+    next(error);
   }
 });
 
 // Signin Route (for users)
-app.post("/signin", async (req, res) => {
+app.post("/signin", async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email, password });
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.json({ success: false, message: "Invalid credentials" });
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
     res.json({ success: true, message: "Login successful" });
   } catch (error) {
-    console.error("Signin error:", error);
-    res.json({ success: false, message: "Signin failed. Try again." });
+    next(error);
   }
 });
 
 // Add a new contact (POST)
-app.post("/addContact", async (req, res) => {
+app.post("/addContact", async (req, res, next) => {
   try {
     const { name, phone, email, birthday, address, photo, userEmail } = req.body;
 
@@ -105,46 +101,40 @@ app.post("/addContact", async (req, res) => {
       birthday,
       address,
       photo,
-      userEmail, // associate with the logged-in user
+      userEmail,
     });
 
     await newContact.save();
-    res.json({ success: true, message: "Contact added" });
+    res.status(201).json({ success: true, message: "Contact added" });
   } catch (err) {
-    console.error("Error adding contact:", err);
-    res.status(500).json({ success: false, message: "Failed to add contact" });
+    next(err);
   }
 });
 
 // Get all contacts (GET) by user email
-app.get("/contacts/:email", async (req, res) => {
+app.get("/contacts/:email", async (req, res, next) => {
   try {
     const email = req.params.email;
     const userContacts = await Contact.find({ userEmail: email });
     res.json({ success: true, contacts: userContacts });
   } catch (err) {
-    console.error("Error fetching contacts:", err);
-    res.status(500).json({ success: false, message: "Error fetching contacts" });
+    next(err);
   }
 });
 
 // Delete contact by ID (DELETE)
-app.delete("/deleteContact/:id/:email", async (req, res) => {
+app.delete("/deleteContact/:id/:email", async (req, res, next) => {
   try {
     const { id, email } = req.params;
-
-    // Only delete if the contact belongs to the user
     await Contact.findOneAndDelete({ _id: id, userEmail: email });
-
     res.json({ success: true, message: "Contact deleted" });
   } catch (err) {
-    console.error("Delete error:", err);
-    res.status(500).json({ success: false, message: "Failed to delete contact" });
+    next(err);
   }
 });
 
 // Update contact by ID (PUT)
-app.put("/updateContact/:id", async (req, res) => {
+app.put("/updateContact/:id", async (req, res, next) => {
   const { id } = req.params;
   const { photo, name, phone, email, birthday, address } = req.body;
 
@@ -156,15 +146,35 @@ app.put("/updateContact/:id", async (req, res) => {
     );
 
     if (!updatedContact) {
-      return res.json({ success: false, message: "Contact not found" });
+      return res.status(404).json({ success: false, message: "Contact not found" });
     }
 
     res.json({ success: true, message: "Contact updated successfully", updatedContact });
   } catch (error) {
-    console.error("Error updating contact:", error);
-    res.json({ success: false, message: "Failed to update contact" });
+    next(error);
   }
 });
 
+// Catch 404 routes
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: "Route not found" });
+});
+
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error("🔥 Error:", err.message);
+
+  if (err.name === "ValidationError") {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+
+  if (err.code === 11000) {
+    return res.status(409).json({ success: false, message: "Duplicate entry detected" });
+  }
+
+  res.status(500).json({ success: false, message: "Internal server error" });
+});
+
 // Start the server
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
