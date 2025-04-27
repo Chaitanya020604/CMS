@@ -28,24 +28,28 @@
     }
 
     .info-section {
-  background-color: #44444400;
-  color: white;
-  padding: 20px;
-  text-align: left; /* <-- Important: left-align like Q&A */
-  font-size: 16px;
-  text-align: justify;
-}
+      background-color: #44444400;
+      color: white;
+      padding: 20px;
+      text-align: left;
+      /* <-- Important: left-align like Q&A */
+      font-size: 16px;
+      text-align: justify;
+    }
 
-.info-section h2 {
-  margin-bottom: 10px; /* <-- Only small gap between H2 and paragraph */
-  font-size: 28px;
-}
+    .info-section h2 {
+      margin-bottom: 10px;
+      /* <-- Only small gap between H2 and paragraph */
+      font-size: 28px;
+    }
 
-.info-section p {
-  max-width: 100%; /* <-- Full width inside section */
-  margin: 0; /* <-- Remove extra margin */
-  line-height: 1.6;
-}
+    .info-section p {
+      max-width: 100%;
+      /* <-- Full width inside section */
+      margin: 0;
+      /* <-- Remove extra margin */
+      line-height: 1.6;
+    }
 
 
 
@@ -79,7 +83,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       position: relative;
-      width: 50%;
+      width: 80%;
       margin: 20px auto;
     }
 
@@ -219,14 +223,25 @@
 
 <body>
 
-<header class="header">CMS - Contact Management System</header>
+  <header class="header">CMS - Contact Management System</header>
 
-<section class="info-section">
-  <h2>Why Choose Our Contact Management System?</h2>
-  <p>
-    In today’s fast-paced world, staying organized is crucial. Our Contact Management System (CMS) is built to provide you with a simple, powerful, and reliable solution for managing all your contacts. Whether you're managing personal connections, business networks, or client lists, our CMS ensures you have easy access to your information anytime, anywhere. We offer secure user authentication, fast and efficient contact storage, and even offline support through advanced technologies like IndexedDB. This means you can add, edit, or view contacts even without an internet connection, and everything will sync automatically once you’re back online. With an intuitive interface, quick photo uploads, responsive design, and smooth performance across all devices, our CMS makes managing your relationships effortless. Security is a top priority — your personal data is protected through secure login systems, giving you peace of mind. Plus, our smart search feature helps you find any contact instantly. Choose our Contact Management System to experience seamless organization, ultimate flexibility, and modern design. It's more than just a tool; it's a smart way to stay connected and build stronger relationships. Trust us to help you manage your contacts better than ever before!
-  </p>
-</section>
+  <section class="info-section">
+    <h2>Why Choose Our Contact Management System?</h2>
+    <p>
+      In today’s fast-paced world, staying organized is crucial. Our Contact Management System (CMS) is built to provide
+      you with a simple, powerful, and reliable solution for managing all your contacts. Whether you're managing
+      personal connections, business networks, or client lists, our CMS ensures you have easy access to your information
+      anytime, anywhere. We offer secure user authentication, fast and efficient contact storage, and even offline
+      support through advanced technologies like IndexedDB. This means you can add, edit, or view contacts even without
+      an internet connection, and everything will sync automatically once you’re back online. With an intuitive
+      interface, quick photo uploads, responsive design, and smooth performance across all devices, our CMS makes
+      managing your relationships effortless. Security is a top priority — your personal data is protected through
+      secure login systems, giving you peace of mind. Plus, our smart search feature helps you find any contact
+      instantly. Choose our Contact Management System to experience seamless organization, ultimate flexibility, and
+      modern design. It's more than just a tool; it's a smart way to stay connected and build stronger relationships.
+      Trust us to help you manage your contacts better than ever before!
+    </p>
+  </section>
 
   <!-- Sign In Modal -->
   <div id="signinModal" class="modal">
@@ -280,19 +295,19 @@
     <ul id="contactList"></ul>
   </div>
 
-  
-<footer class="footer">
-  <div class="social-icons">
-    <a href="https://www.linkedin.com" target="_blank" title="LinkedIn">🔗</a>
-    <a href="https://www.contact.com" target="_blank" title="Contact">📞</a>
-    <a href="mailto:example@email.com" title="Email">✉️</a>
-    <a href="https://www.instagram.com" target="_blank" title="Instagram">📸</a>
-    <a href="https://www.facebook.com" target="_blank" title="Facebook">📘</a>
-  </div>
-  <div class="feedback">
-    Feedback
-  </div>
-</footer>
+
+  <footer class="footer">
+    <div class="social-icons">
+      <a href="https://www.linkedin.com" target="_blank" title="LinkedIn">🔗</a>
+      <a href="https://www.contact.com" target="_blank" title="Contact">📞</a>
+      <a href="mailto:example@email.com" title="Email">✉️</a>
+      <a href="https://www.instagram.com" target="_blank" title="Instagram">📸</a>
+      <a href="https://www.facebook.com" target="_blank" title="Facebook">📘</a>
+    </div>
+    <div class="feedback">
+      Feedback
+    </div>
+  </footer>
 
   <script>
     // ---------- IndexedDB Setup ----------
@@ -328,7 +343,6 @@
       const store = transaction.objectStore(DB_STORE_NAME);
       store.getAll().onsuccess = event => callback(event.target.result);
     }
-
     // ---------- Password Visibility Toggle Functions ----------
     function toggleSigninPassword() {
       const passwordField = document.getElementById("signinPassword");
