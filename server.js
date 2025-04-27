@@ -44,7 +44,7 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', contactSchema);
 
-// Signup Route (for users)
+// Signup Route
 app.post("/signup", async (req, res, next) => {
   const { email, name, password } = req.body;
 
@@ -68,7 +68,7 @@ app.post("/signup", async (req, res, next) => {
   }
 });
 
-// Signin Route (for users)
+// Signin Route
 app.post("/signin", async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -89,7 +89,7 @@ app.post("/signin", async (req, res, next) => {
   }
 });
 
-// Add a new contact (POST)
+// Add Contact Route
 app.post("/addContact", async (req, res, next) => {
   try {
     const { name, phone, email, birthday, address, photo, userEmail } = req.body;
@@ -111,7 +111,7 @@ app.post("/addContact", async (req, res, next) => {
   }
 });
 
-// Get all contacts (GET) by user email
+// Get Contacts by User Email
 app.get("/contacts/:email", async (req, res, next) => {
   try {
     const email = req.params.email;
@@ -122,7 +122,7 @@ app.get("/contacts/:email", async (req, res, next) => {
   }
 });
 
-// Delete contact by ID (DELETE)
+// Delete Contact by ID
 app.delete("/deleteContact/:id/:email", async (req, res, next) => {
   try {
     const { id, email } = req.params;
@@ -133,7 +133,7 @@ app.delete("/deleteContact/:id/:email", async (req, res, next) => {
   }
 });
 
-// Update contact by ID (PUT)
+// Update Contact by ID
 app.put("/updateContact/:id", async (req, res, next) => {
   const { id } = req.params;
   const { photo, name, phone, email, birthday, address } = req.body;
@@ -155,12 +155,12 @@ app.put("/updateContact/:id", async (req, res, next) => {
   }
 });
 
-// Catch 404 routes
+// Catch 404 Routes
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Centralized error handler
+// Centralized Error Handler
 app.use((err, req, res, next) => {
   console.error("🔥 Error:", err.message);
 
@@ -177,4 +177,4 @@ app.use((err, req, res, next) => {
 
 // Start the server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port: ${PORT}`));

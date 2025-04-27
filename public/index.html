@@ -315,10 +315,12 @@
     const DB_VERSION = 1;
     const DB_STORE_NAME = 'contacts';
     let db;
-
+  
+    const backendUrl = 'https://cms-bna8.onrender.com'; // <-- your deployed backend
+  
     function openDb() {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
-
+  
       request.onerror = event => console.error("Database error:", event.target.errorCode);
       request.onsuccess = event => {
         db = event.target.result;
@@ -331,50 +333,51 @@
         }
       };
     }
-
+  
     function saveContactToIndexedDB(contact) {
       const transaction = db.transaction([DB_STORE_NAME], "readwrite");
       const store = transaction.objectStore(DB_STORE_NAME);
       store.add(contact).onsuccess = () => console.log("Contact saved to IndexedDB");
     }
-
+  
     function getContactsFromIndexedDB(callback) {
       const transaction = db.transaction([DB_STORE_NAME], "readonly");
       const store = transaction.objectStore(DB_STORE_NAME);
       store.getAll().onsuccess = event => callback(event.target.result);
     }
+  
     // ---------- Password Visibility Toggle Functions ----------
     function toggleSigninPassword() {
       const passwordField = document.getElementById("signinPassword");
       const isPasswordType = passwordField.type === "password";
       passwordField.type = isPasswordType ? "text" : "password";
     }
-
+  
     function toggleSignupPassword() {
       const passwordField = document.getElementById("signupPassword");
       const isPasswordType = passwordField.type === "password";
       passwordField.type = isPasswordType ? "text" : "password";
     }
-
+  
     // ---------- App Logic ----------  
     let currentUser = null;
     let contacts = [];
     let editingIndex = null;
-
+  
     function addContact(event) {
       event.preventDefault();
-
+  
       const name = document.getElementById("contactName").value;
       const phone = document.getElementById("contactPhone").value;
       const email = document.getElementById("contactEmail").value;
       const birthday = document.getElementById("contactBirthday").value;
       const address = document.getElementById("contactAddress").value;
       const userEmail = localStorage.getItem("user");
-
+  
       const newContact = { name, phone, email, birthday, address, userEmail };
-
+  
       if (navigator.onLine) {
-        fetch("http://localhost:10000/addContact", {
+        fetch(`${backendUrl}/addContact`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newContact),
@@ -393,11 +396,11 @@
         alert("Offline: Contact saved locally.");
       }
     }
-
+  
     function getContacts() {
       const userEmail = localStorage.getItem("user");
       if (navigator.onLine) {
-        fetch(`http://localhost:10000/contacts/${userEmail}`)
+        fetch(`${backendUrl}/contacts/${userEmail}`)
           .then(res => res.json())
           .then(data => {
             contacts = data.contacts || [];
@@ -411,11 +414,11 @@
         });
       }
     }
-
+  
     function displayContacts() {
       const list = document.getElementById("contactList");
       list.innerHTML = "";
-
+  
       contacts.forEach((contact, index) => {
         const li = document.createElement("li");
         li.classList.add("contact-card");
@@ -436,7 +439,7 @@
         list.appendChild(li);
       });
     }
-
+  
     function editContact(index) {
       const contact = contacts[index];
       document.getElementById("contactName").value = contact.name;
@@ -446,12 +449,12 @@
       document.getElementById("contactAddress").value = contact.address;
       editingIndex = index;
     }
-
+  
     function deleteContact(index) {
       const contactId = contacts[index]._id;
       const userEmail = localStorage.getItem("user");
-
-      fetch(`http://localhost:10000/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
+  
+      fetch(`${backendUrl}/deleteContact/${contactId}/${userEmail}`, { method: "DELETE" })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -460,24 +463,24 @@
           }
         });
     }
-
+  
     // ---------- Auth ----------
     function toggleModals(show) {
       document.getElementById("signupModal").style.display = show === "signup" ? "flex" : "none";
       document.getElementById("signinModal").style.display = show === "signin" ? "flex" : "none";
     }
-
+  
     function signup() {
       const email = document.getElementById("signupEmail").value.trim();
       const name = document.getElementById("signupName").value.trim();
       const password = document.getElementById("signupPassword").value.trim();
-
+  
       if (!email || !name || !password) {
         alert("All fields are required.");
         return;
       }
-
-      fetch("http://localhost:10000/signup", {
+  
+      fetch(`${backendUrl}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
@@ -495,12 +498,12 @@
           }
         });
     }
-
+  
     function signin() {
       const email = document.getElementById("signinEmail").value.trim();
       const password = document.getElementById("signinPassword").value.trim();
-
-      fetch("http://localhost:10000/signin", {
+  
+      fetch(`${backendUrl}/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -518,7 +521,7 @@
           }
         });
     }
-
+  
     function logout() {
       localStorage.removeItem("user");
       currentUser = null;
@@ -526,14 +529,14 @@
       document.getElementById("mainContainer").style.display = "none";
       toggleModals("signin");
     }
-
+  
     // ---------- Service Worker ----------
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
         .then(reg => console.log("SW registered:", reg.scope))
         .catch(err => console.error("SW failed:", err));
     }
-
+  
     // ---------- App Init ----------
     window.onload = function () {
       openDb();
