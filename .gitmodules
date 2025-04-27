@@ -1,0 +1,3 @@
+[submodule "CMS"]
+    path = CMS
+    url = https://github.com/Chaitanya020604/CMS.git
